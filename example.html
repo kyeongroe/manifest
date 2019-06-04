@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Scandit Example Page</title>
+    <script src="index.js"></script>
+
+    <!-- The following is only an example style for the container element and other demo elements, it's not required -->
+    <style>
+      body {
+        background-color: black;
+        color: white;
+        text-align: center;
+      }
+
+      .scanner {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        max-width: 1280px;
+        max-height: 80%;
+      }
+
+      .result-text {
+        padding: 1rem;
+        font-size: 18pt;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="scandit-barcode-picker" class="scanner"></div>
+    <div id="scandit-barcode-result" class="result-text"></div>
+
+    <script>
+      ScanditSDK.configure("ASldaxOVDjTYEzgsggQvaCUMxci2CkamdnpTJ/oG0+USROblKl8Fp/9W3Y8odu9RnAWurcV3g3B6D851Tm7dSHx6iiQbccREfnxnrJpUSMyyXeGyO1Fy3QwrfDnMPIwbyo+QX6hfEGjRjir/yoQJjLSPzzsx0K2Ms/jkNWVjCnyGhWdSbfmaDTfn0l24srt81rUpwX7u0O2Cu8rVxPgSEhJQmLTObC5ekcJ+7t305u7GefyR5OElBh4D3c1iIJpn0QBIckaD4RKW4ZIOB4Kge6Trtg0anP9ZAl/ShLiZPgiL+1q10oJvJSNyBeObsf37lg2secuEklFN7RCsrMG0idn8wfIxazlSAJ/yUgRpE5to8oj6AnycCMnKS8XP50kMRDiSfaOVtk3tFJJVHNBqon94K0LL1ODfsiK1GvgZdBCbVtv14UmVY0sCw9cwRlQSkXIUkpWlCs95XChYwPnBnKsswblMTSOMn7+iVB/W0hNpAXSlRi3i7quTadH7ff1H4mC3wjdlz/9jzEc9yuiLTq9qTXLpLPm1y8fJnN3YP4H3J15OI/TqbL0L7bCwd+a2c02teRXyqaQlx3cPWBYC8v4OlE61sCyxdXTFpFOQ7vHbjkk6c7gQ0QG9RIwYVoMsB0zdgYobwO7KOGnUgK37Nwb7DXiCgW4+wMJ/yvkKx0gEQKCE65FaTczY7cWiAweE3KRAmaA1ElitPvgYVhaeBKuROUvWMl0ww+xxXjCluT9oFiBp7z8myqwgJ5q6nhMhrX5GKbEVUobemw1D+6h6FYdyg2yqVhW6PnsZSGJLfQZ/", {
+        engineLocation: ""
+      }).then(function() {
+        return ScanditSDK.BarcodePicker.create(document.getElementById("scandit-barcode-picker"), { playSoundOnScan: false, vibrateOnScan: false })
+          .then(function(barcodePicker) {
+            var scanSettings = new ScanditSDK.ScanSettings({ enabledSymbologies: ["ean8", "ean13", "upca", "upce", "code128", "code39", "code93", "itf"], codeDuplicateFilter: 1000 });
+            barcodePicker.applyScanSettings(scanSettings);
+            barcodePicker.onScan(function(scanResult) {
+              document.getElementById("scandit-barcode-result").innerHTML = scanResult.barcodes.reduce(function(string, barcode) {
+                return string + ScanditSDK.Barcode.Symbology.toHumanizedName(barcode.symbology) + ": " + barcode.data + "<br>";
+              }, "");
+            });
+            barcodePicker.onScanError(function(error) {
+              console.error(error);
+            });
+          });
+      })
+      .catch(function(error) {
+        alert(error);
+      });
+
+    </script>
+  </body>
+
+</html>
